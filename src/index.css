@@ -1875,8 +1875,13 @@ a {
         z-index: 120 !important;
     }
 
-    /* App-like Stage Centering & Glassmorphic Cards (No overlaps) */
+    /* App-like Stage Centering & Glassmorphic Cards (No overlaps, perfect overlays) */
     .hero-left-column {
+        position: absolute !important;
+        bottom: 4.5rem !important;
+        left: 0 !important;
+        right: 0 !important;
+        margin: 0 auto !important;
         background: rgba(10, 9, 8, 0.76) !important;
         backdrop-filter: blur(16px) !important;
         -webkit-backdrop-filter: blur(16px) !important;
@@ -1886,11 +1891,12 @@ a {
         box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6) !important;
         width: 90% !important;
         max-width: 520px !important;
-        margin: 0 auto !important;
+        z-index: 10 !important;
     }
 
     .hero-stage2-floating-text {
         position: absolute !important;
+        bottom: 4.5rem !important;
         left: 0 !important;
         right: 0 !important;
         margin: 0 auto !important;
@@ -1906,10 +1912,12 @@ a {
         text-align: center !important;
         align-items: center !important;
         transform: translateY(0) !important; /* Prevent horizontal translateX overflow */
+        z-index: 10 !important;
     }
 
     .hero-stage3-floating-text {
         position: absolute !important;
+        bottom: 4.5rem !important;
         left: 0 !important;
         right: 0 !important;
         margin: 0 auto !important;
@@ -1924,6 +1932,7 @@ a {
         box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6) !important;
         text-align: center !important;
         align-items: center !important;
+        z-index: 10 !important;
     }
 
     /* Floating preview bar responsive adjustment */
@@ -2039,15 +2048,8 @@ a {
         grid-template-columns: 1fr !important;
     }
     .hero-left-column {
-        width: 100% !important;
-        max-width: 100% !important;
-        margin: 0 !important;
-        padding: 2rem 1.25rem !important;
-        border-radius: 0 !important;
-        border-left: none !important;
-        border-right: none !important;
-    }
-    .hero-stage2-floating-text {
+        position: absolute !important;
+        bottom: 0 !important;
         left: 0 !important;
         right: 0 !important;
         width: 100% !important;
@@ -2058,7 +2060,23 @@ a {
         border-left: none !important;
         border-right: none !important;
     }
+    .hero-stage2-floating-text {
+        position: absolute !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 2rem 1.25rem !important;
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        transform: translateY(0) !important;
+    }
     .hero-stage3-floating-text {
+        position: absolute !important;
+        bottom: 0 !important;
         left: 0 !important;
         right: 0 !important;
         width: 100% !important;

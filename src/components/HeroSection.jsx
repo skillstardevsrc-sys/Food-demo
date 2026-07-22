@@ -77,13 +77,22 @@ export default function HeroSection({ onOpenOrderModal, onScrollToMenu, onProgre
       let drawW, drawH, drawX, drawY;
 
       const isMobile = window.innerWidth <= 1024;
+      const isPortrait = h > w;
 
       if (isMobile) {
-        // Fit to width on mobile/tablet viewports so the burger doesn't get cut off on the sides (contain)
-        drawW = w;
-        drawH = w / imgRatio;
-        drawX = 0;
-        drawY = (h - drawH) / 2;
+        if (isPortrait) {
+          // Portrait phone/tablet: scale to 1.55x canvas width and shift up by 50px to sit above text cards
+          drawW = w * 1.55;
+          drawH = drawW / imgRatio;
+          drawX = (w - drawW) / 2;
+          drawY = (h - drawH) / 2 - 50;
+        } else {
+          // Landscape mobile: fit to width, centered
+          drawW = w;
+          drawH = w / imgRatio;
+          drawX = 0;
+          drawY = (h - drawH) / 2;
+        }
       } else {
         // Cover strategy on desktop
         if (canvasRatio > imgRatio) {
