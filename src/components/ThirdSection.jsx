@@ -155,7 +155,7 @@ export default function ThirdSection({ onOpenOrderModal }) {
     } else {
       const finalIdx = index - SECOND_FRAMES_COUNT;
       const frameNum = String(finalIdx + 1).padStart(3, '0');
-      return `/assets/final frame/ezgif-frame-${frameNum}.png`;
+      return `/assets/finalframe/ezgif-frame-${frameNum}.png`;
     }
   };
 
