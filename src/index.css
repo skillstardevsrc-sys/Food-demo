@@ -1831,6 +1831,9 @@ a {
     .hero-scroll-container {
         height: 250vh !important;
     }
+    .hero-wrapper {
+        height: 70vh !important;
+    }
 
     /* Disable Canvas Scroll Animation in ThirdSection - flow naturally */
     .third-scroll-container {
@@ -1875,13 +1878,8 @@ a {
         z-index: 120 !important;
     }
 
-    /* App-like Stage Centering & Glassmorphic Cards (No overlaps, perfect overlays) */
+    /* App-like Stage Centering & Glassmorphic Cards (No overlaps) */
     .hero-left-column {
-        position: absolute !important;
-        bottom: 4.5rem !important;
-        left: 0 !important;
-        right: 0 !important;
-        margin: 0 auto !important;
         background: rgba(10, 9, 8, 0.76) !important;
         backdrop-filter: blur(16px) !important;
         -webkit-backdrop-filter: blur(16px) !important;
@@ -1891,12 +1889,11 @@ a {
         box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6) !important;
         width: 90% !important;
         max-width: 520px !important;
-        z-index: 10 !important;
+        margin: 0 auto !important;
     }
 
     .hero-stage2-floating-text {
         position: absolute !important;
-        bottom: 4.5rem !important;
         left: 0 !important;
         right: 0 !important;
         margin: 0 auto !important;
@@ -1912,12 +1909,10 @@ a {
         text-align: center !important;
         align-items: center !important;
         transform: translateY(0) !important; /* Prevent horizontal translateX overflow */
-        z-index: 10 !important;
     }
 
     .hero-stage3-floating-text {
         position: absolute !important;
-        bottom: 4.5rem !important;
         left: 0 !important;
         right: 0 !important;
         margin: 0 auto !important;
@@ -1932,7 +1927,6 @@ a {
         box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6) !important;
         text-align: center !important;
         align-items: center !important;
-        z-index: 10 !important;
     }
 
     /* Floating preview bar responsive adjustment */
@@ -2019,6 +2013,9 @@ a {
     .hero-scroll-container {
         height: 160vh !important;
     }
+    .hero-wrapper {
+        height: 60vh !important;
+    }
 
     /* Hide top nav items and order button since bottom nav is active */
     .order-now-nav-btn {
@@ -2048,10 +2045,6 @@ a {
         grid-template-columns: 1fr !important;
     }
     .hero-left-column {
-        position: absolute !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 !important;
@@ -2061,8 +2054,6 @@ a {
         border-right: none !important;
     }
     .hero-stage2-floating-text {
-        position: absolute !important;
-        bottom: 0 !important;
         left: 0 !important;
         right: 0 !important;
         width: 100% !important;
@@ -2072,11 +2063,8 @@ a {
         border-radius: 0 !important;
         border-left: none !important;
         border-right: none !important;
-        transform: translateY(0) !important;
     }
     .hero-stage3-floating-text {
-        position: absolute !important;
-        bottom: 0 !important;
         left: 0 !important;
         right: 0 !important;
         width: 100% !important;
