@@ -2317,3 +2317,109 @@ a {
         margin-top: 0.5rem !important;
     }
 }
+
+/* ==========================================================================
+   9. GLOBAL PRELOADER SCREEN OVERLAY
+   ========================================================================== */
+.global-preloader {
+    position: fixed;
+    inset: 0;
+    background: #0A0908;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.8s ease;
+}
+
+.global-preloader.fade-out {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.preloader-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    text-align: center;
+}
+
+.preloader-logo-wrap {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+.preloader-star {
+    font-size: 2.2rem;
+    color: var(--accent-orange);
+    filter: drop-shadow(0 0 15px rgba(255, 85, 0, 0.7));
+    animation: pulseStar 1.8s infinite alternate;
+}
+
+.preloader-ring {
+    position: absolute;
+    inset: 0;
+    border: 3px solid rgba(255, 85, 0, 0.12);
+    border-top: 3px solid var(--accent-orange);
+    border-radius: 50%;
+    animation: spinRing 1.5s linear infinite;
+}
+
+.preloader-title {
+    font-family: var(--font-display);
+    font-size: 2.4rem;
+    letter-spacing: 0.08em;
+    color: #FFFFFF;
+    margin: 0;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+}
+
+.preloader-subtitle {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    margin: -0.5rem 0 0;
+}
+
+.preloader-progress-container {
+    width: 240px;
+    height: 6px;
+    background: #181614;
+    border: 1px solid #282420;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.preloader-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #FF5500 0%, #FFAA00 100%);
+    box-shadow: 0 0 10px rgba(255, 85, 0, 0.5);
+    width: 0%;
+    transition: width 0.1s linear;
+}
+
+.preloader-percentage {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--accent-orange);
+    letter-spacing: 0.05em;
+}
+
+@keyframes pulseStar {
+    0% { transform: scale(0.9); opacity: 0.8; }
+    100% { transform: scale(1.1); opacity: 1; }
+}
+
+@keyframes spinRing {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
