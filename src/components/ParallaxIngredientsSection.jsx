@@ -39,8 +39,6 @@ export default function ParallaxIngredientsSection() {
           <img 
             src="/assets/images/second/lettuce_leaf-removebg-preview.png" 
             alt="Fresh Crisp Lettuce" 
-            loading="lazy"
-            decoding="async"
           />
         </div>
 
@@ -52,8 +50,6 @@ export default function ParallaxIngredientsSection() {
           <img 
             src="/assets/images/second/bacon_strip-removebg-preview.png" 
             alt="Sizzled Bacon Strip" 
-            loading="lazy"
-            decoding="async"
           />
         </div>
 
@@ -65,8 +61,6 @@ export default function ParallaxIngredientsSection() {
           <img 
             src="/assets/images/second/tomato_slice-removebg-preview.png" 
             alt="Fresh Juicy Tomato" 
-            loading="lazy"
-            decoding="async"
           />
         </div>
 
@@ -78,8 +72,6 @@ export default function ParallaxIngredientsSection() {
           <img 
             src="/assets/images/second/french_fries-removebg-preview.png" 
             alt="Golden Crispy French Fries" 
-            loading="lazy"
-            decoding="async"
           />
         </div>
       </div>

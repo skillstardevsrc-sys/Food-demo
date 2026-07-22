@@ -130,7 +130,7 @@ const KITCHENS = [
   },
 ];
 
-export default function ThirdSection({ onOpenOrderModal, onProgress }) {
+export default function ThirdSection({ onOpenOrderModal }) {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const imagesRef = useRef([]);
@@ -159,31 +159,53 @@ export default function ThirdSection({ onOpenOrderModal, onProgress }) {
     }
   };
 
-  // Preload frames and track load progress on desktop. Completely skipped on mobile/tablet.
+  // Progressive loading: first 8 frames load immediately, rest load in idle batches
+  // Mobile/tablet: completely skipped (canvas is hidden on small screens)
   useEffect(() => {
     const isMobile = window.innerWidth <= 1024;
     if (isMobile) {
-      // Report immediately complete on mobile to not block preloader
-      onProgress?.(0);
-      return;
+      return; // Do not load any third sequence frames on mobile/tablet
     }
 
-    const images = [];
-    let loadedCount = 0;
+    const images = new Array(COMBINED_TOTAL_FRAMES).fill(null).map(() => new Image());
+    imagesRef.current = images;
 
-    const onImageLoad = () => {
-      loadedCount++;
-      onProgress?.(loadedCount);
+    // PHASE 1: Load first 8 frames immediately for instant canvas paint
+    const INITIAL_BATCH = 8;
+    for (let i = 0; i < Math.min(INITIAL_BATCH, COMBINED_TOTAL_FRAMES); i++) {
+      images[i].src = getFrameUrl(i);
+    }
+
+    // PHASE 2: Load remaining frames in small idle batches
+    let nextBatchStart = INITIAL_BATCH;
+    const BATCH_SIZE = 20;
+
+    const loadNextBatch = () => {
+      if (nextBatchStart >= COMBINED_TOTAL_FRAMES) return;
+      const end = Math.min(nextBatchStart + BATCH_SIZE, COMBINED_TOTAL_FRAMES);
+      for (let i = nextBatchStart; i < end; i++) {
+        images[i].src = getFrameUrl(i);
+      }
+      nextBatchStart = end;
+      if (nextBatchStart < COMBINED_TOTAL_FRAMES) {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(loadNextBatch, { timeout: 400 });
+        } else {
+          setTimeout(loadNextBatch, 150);
+        }
+      }
     };
 
-    for (let i = 0; i < COMBINED_TOTAL_FRAMES; i++) {
-      const img = new Image();
-      img.onload = onImageLoad;
-      img.onerror = onImageLoad; // Fallback to avoid getting stuck
-      img.src = getFrameUrl(i);
-      images.push(img);
-    }
-    imagesRef.current = images;
+    // Delay start so hero section loads first
+    const timer = setTimeout(() => {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadNextBatch, { timeout: 600 });
+      } else {
+        setTimeout(loadNextBatch, 300);
+      }
+    }, 1500);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const drawFrame = (frameIndex) => {
@@ -338,7 +360,7 @@ export default function ThirdSection({ onOpenOrderModal, onProgress }) {
                 style={{ animationDelay: `${i * 0.04}s` }}
               >
                 <div class="kdish-img-wrap">
-                  <img src={currentKitchen.image} alt={dish.name} class="kdish-img" loading="lazy" decoding="async" />
+                  <img src={currentKitchen.image} alt={dish.name} class="kdish-img" />
                   <div class="kdish-img-overlay" style={{ background: `linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%)` }}></div>
                 </div>
                 <div class="kdish-badge" style={{ background: dish.badgeColor }}>{dish.badge}</div>
