@@ -21,12 +21,20 @@ export default function HeroSection({ onOpenOrderModal, onScrollToMenu }) {
     return `/assets/heroframes/ezgif-frame-${frameNum}.png`;
   };
 
-  // Preload all 300 image frames into memory
+  // Preload image frames into memory with mobile step optimization (saves 75% bandwidth)
   useEffect(() => {
+    const isMobile = window.innerWidth <= 1024;
+    const step = isMobile ? 4 : 1;
     const images = [];
     for (let i = 0; i < TOTAL_FRAMES; i++) {
       const img = new Image();
-      img.src = getFrameUrl(i);
+      if (i % step === 0 || i === 0 || i === TOTAL_FRAMES - 1) {
+        img.src = getFrameUrl(i);
+      } else {
+        const nearestIndex = Math.round(i / step) * step;
+        const clampedIndex = Math.max(0, Math.min(TOTAL_FRAMES - 1, nearestIndex));
+        img.src = getFrameUrl(clampedIndex);
+      }
       images.push(img);
     }
     imagesRef.current = images;

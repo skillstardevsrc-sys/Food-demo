@@ -159,7 +159,12 @@ export default function ThirdSection({ onOpenOrderModal }) {
     }
   };
 
+  // Preload frames (completely skipped on mobile/tablet to save 100% bandwidth since canvas is hidden)
   useEffect(() => {
+    const isMobile = window.innerWidth <= 1024;
+    if (isMobile) {
+      return; // Do not load any third sequence frames on mobile/tablet
+    }
     const images = [];
     for (let i = 0; i < COMBINED_TOTAL_FRAMES; i++) {
       const img = new Image();
