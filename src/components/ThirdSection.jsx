@@ -148,14 +148,23 @@ export default function ThirdSection({ onOpenOrderModal }) {
   const currentFrameRef = useRef(0);
   const animLoopIdRef = useRef(null);
 
+  // Serve WebP if supported (80% smaller), fallback to PNG
+  const imgExt = (() => {
+    const canvas = document.createElement('canvas');
+    if (canvas.getContext && canvas.getContext('2d')) {
+      return canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0 ? 'webp' : 'png';
+    }
+    return 'png';
+  })();
+
   const getFrameUrl = (index) => {
     if (index < SECOND_FRAMES_COUNT) {
       const frameNum = String(index + 1).padStart(3, '0');
-      return `/assets/secondframes/ezgif-frame-${frameNum}.png`;
+      return `/assets/secondframes/ezgif-frame-${frameNum}.${imgExt}`;
     } else {
       const finalIdx = index - SECOND_FRAMES_COUNT;
       const frameNum = String(finalIdx + 1).padStart(3, '0');
-      return `/assets/finalframe/ezgif-frame-${frameNum}.png`;
+      return `/assets/finalframe/ezgif-frame-${frameNum}.${imgExt}`;
     }
   };
 

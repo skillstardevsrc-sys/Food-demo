@@ -16,17 +16,27 @@ export default function HeroSection({ onOpenOrderModal, onScrollToMenu, onReady 
   const currentFrameRef = useRef(0);
   const animLoopIdRef = useRef(null);
 
+  // Serve WebP if supported (80% smaller), fallback to PNG
+  const supportsWebP = (() => {
+    const canvas = document.createElement('canvas');
+    if (canvas.getContext && canvas.getContext('2d')) {
+      return canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+    }
+    return false;
+  })();
+  const imgExt = supportsWebP ? 'webp' : 'png';
+
   const getFrameUrl = (index) => {
     const frameNum = String(index + 1).padStart(3, '0');
-    return `/assets/heroframes/ezgif-frame-${frameNum}.png`;
+    return `/assets/heroframes/ezgif-frame-${frameNum}.${imgExt}`;
   };
 
   // Smart progressive loading: first 10 frames load immediately for instant first paint,
   // remaining frames load in batches as user scrolls to reduce initial bandwidth ~95%
   useEffect(() => {
     const isMobile = window.innerWidth <= 1024;
-    // On mobile: load every 4th frame only (saves 75% bandwidth)
-    const step = isMobile ? 4 : 1;
+    // On mobile: load every 6th frame only (saves 83% bandwidth)
+    const step = isMobile ? 6 : 1;
     const images = new Array(TOTAL_FRAMES).fill(null).map(() => new Image());
     imagesRef.current = images;
 
