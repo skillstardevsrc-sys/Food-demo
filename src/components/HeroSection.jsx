@@ -21,18 +21,18 @@ export default function HeroSection({ onOpenOrderModal, onScrollToMenu, onReady 
     return `/assets/heroframes/ezgif-frame-${frameNum}.png`;
   };
 
-  // Smart progressive loading: first 10 frames load immediately for instant first paint,
-  // remaining frames load in batches as user scrolls to reduce initial bandwidth ~95%
+  // Optimized progressive loading:
+  // Desktop: every 2nd frame (saves 50% bandwidth = ~135MB saved)
+  // Mobile:  every 5th frame (saves 80% bandwidth)
   useEffect(() => {
     const isMobile = window.innerWidth <= 1024;
-    // On mobile: load every 4th frame only (saves 75% bandwidth)
-    const step = isMobile ? 4 : 1;
+    const step = isMobile ? 5 : 2; // KEY CHANGE: desktop now uses step=2
     const images = new Array(TOTAL_FRAMES).fill(null).map(() => new Image());
     imagesRef.current = images;
 
-    // PHASE 1: Load first 10 frames immediately and track when they are fully ready
-    const INITIAL_BATCH = 10;
-    const targetToLoad = Math.min(INITIAL_BATCH, TOTAL_FRAMES);
+    // PHASE 1: Load first 5 frames immediately — faster first paint
+    const INITIAL_BATCH = 5;
+    const targetToLoad = INITIAL_BATCH;
     let loadedCount = 0;
     let fallbackTimer = null;
 
@@ -44,20 +44,27 @@ export default function HeroSection({ onOpenOrderModal, onScrollToMenu, onReady 
       }
     };
 
-    // Fallback timer: 3 seconds max wait for slow networks
+    // Fallback: max 2s wait on slow networks
     fallbackTimer = setTimeout(() => {
       if (onReady) onReady();
-    }, 3000);
+    }, 2000);
 
-    for (let i = 0; i < targetToLoad; i++) {
+    for (let i = 0; i < targetToLoad; i += step) {
       images[i].onload = checkReady;
       images[i].onerror = checkReady;
       images[i].src = getFrameUrl(i);
     }
+    // fill non-stepped initial frames with nearest
+    for (let i = 0; i < targetToLoad; i++) {
+      if (!images[i].src) {
+        const nearest = Math.round(i / step) * step;
+        images[i].src = getFrameUrl(Math.min(nearest, TOTAL_FRAMES - 1));
+      }
+    }
 
-    // PHASE 2: Load remaining frames lazily in small batches using requestIdleCallback
+    // PHASE 2: Load remaining frames in larger batches for faster background load
     let nextBatchStart = INITIAL_BATCH;
-    const BATCH_SIZE = 15;
+    const BATCH_SIZE = 30;
 
     const loadNextBatch = () => {
       if (nextBatchStart >= TOTAL_FRAMES) return;
@@ -66,30 +73,29 @@ export default function HeroSection({ onOpenOrderModal, onScrollToMenu, onReady 
         if (i % step === 0 || i === TOTAL_FRAMES - 1) {
           images[i].src = getFrameUrl(i);
         } else {
+          // Reuse nearest loaded frame — no extra HTTP request
           const nearestIndex = Math.round(i / step) * step;
           const clampedIndex = Math.max(0, Math.min(TOTAL_FRAMES - 1, nearestIndex));
           images[i].src = getFrameUrl(clampedIndex);
         }
       }
       nextBatchStart = end;
-      // Schedule next batch when browser is idle
       if (nextBatchStart < TOTAL_FRAMES) {
         if ('requestIdleCallback' in window) {
-          requestIdleCallback(loadNextBatch, { timeout: 300 });
+          requestIdleCallback(loadNextBatch, { timeout: 200 });
         } else {
-          setTimeout(loadNextBatch, 100);
+          setTimeout(loadNextBatch, 50);
         }
       }
     };
 
-    // Start lazy loading after a short delay to let first paint complete
     const timer = setTimeout(() => {
       if ('requestIdleCallback' in window) {
-        requestIdleCallback(loadNextBatch, { timeout: 500 });
+        requestIdleCallback(loadNextBatch, { timeout: 300 });
       } else {
-        setTimeout(loadNextBatch, 200);
+        setTimeout(loadNextBatch, 100);
       }
-    }, 800);
+    }, 500);
 
     return () => {
       clearTimeout(fallbackTimer);

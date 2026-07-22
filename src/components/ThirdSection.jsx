@@ -159,51 +159,64 @@ export default function ThirdSection({ onOpenOrderModal }) {
     }
   };
 
-  // Progressive loading: first 8 frames load immediately, rest load in idle batches
-  // Mobile/tablet: completely skipped (canvas is hidden on small screens)
+  // Optimized: every 2nd frame on desktop (saves 50% = ~115MB for 306 frames)
+  // Mobile: completely skipped (canvas hidden on small screens)
   useEffect(() => {
     const isMobile = window.innerWidth <= 1024;
     if (isMobile) {
-      return; // Do not load any third sequence frames on mobile/tablet
+      return;
     }
 
+    const step = 2; // Load every 2nd frame — 50% bandwidth savings
     const images = new Array(COMBINED_TOTAL_FRAMES).fill(null).map(() => new Image());
     imagesRef.current = images;
 
-    // PHASE 1: Load first 8 frames immediately for instant canvas paint
-    const INITIAL_BATCH = 8;
-    for (let i = 0; i < Math.min(INITIAL_BATCH, COMBINED_TOTAL_FRAMES); i++) {
+    // PHASE 1: Load first 4 frames immediately for fast canvas paint
+    const INITIAL_BATCH = 4;
+    for (let i = 0; i < Math.min(INITIAL_BATCH, COMBINED_TOTAL_FRAMES); i += step) {
       images[i].src = getFrameUrl(i);
     }
+    // Fill non-stepped initial frames with nearest
+    for (let i = 0; i < INITIAL_BATCH; i++) {
+      if (!images[i].src) {
+        images[i].src = getFrameUrl(Math.min(Math.round(i / step) * step, COMBINED_TOTAL_FRAMES - 1));
+      }
+    }
 
-    // PHASE 2: Load remaining frames in small idle batches
+    // PHASE 2: Load remaining in larger batches
     let nextBatchStart = INITIAL_BATCH;
-    const BATCH_SIZE = 20;
+    const BATCH_SIZE = 30;
 
     const loadNextBatch = () => {
       if (nextBatchStart >= COMBINED_TOTAL_FRAMES) return;
       const end = Math.min(nextBatchStart + BATCH_SIZE, COMBINED_TOTAL_FRAMES);
       for (let i = nextBatchStart; i < end; i++) {
-        images[i].src = getFrameUrl(i);
+        if (i % step === 0 || i === COMBINED_TOTAL_FRAMES - 1) {
+          images[i].src = getFrameUrl(i);
+        } else {
+          // No extra HTTP request — reuse nearest loaded frame
+          const nearestIndex = Math.round(i / step) * step;
+          images[i].src = getFrameUrl(Math.max(0, Math.min(COMBINED_TOTAL_FRAMES - 1, nearestIndex)));
+        }
       }
       nextBatchStart = end;
       if (nextBatchStart < COMBINED_TOTAL_FRAMES) {
         if ('requestIdleCallback' in window) {
-          requestIdleCallback(loadNextBatch, { timeout: 400 });
+          requestIdleCallback(loadNextBatch, { timeout: 200 });
         } else {
-          setTimeout(loadNextBatch, 150);
+          setTimeout(loadNextBatch, 50);
         }
       }
     };
 
-    // Delay start so hero section loads first
+    // Start loading ThirdSection AFTER Hero finishes (3.5s delay)
     const timer = setTimeout(() => {
       if ('requestIdleCallback' in window) {
-        requestIdleCallback(loadNextBatch, { timeout: 600 });
+        requestIdleCallback(loadNextBatch, { timeout: 400 });
       } else {
-        setTimeout(loadNextBatch, 300);
+        setTimeout(loadNextBatch, 200);
       }
-    }, 1500);
+    }, 3500);
 
     return () => clearTimeout(timer);
   }, []);
