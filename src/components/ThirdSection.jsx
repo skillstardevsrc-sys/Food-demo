@@ -159,19 +159,53 @@ export default function ThirdSection({ onOpenOrderModal }) {
     }
   };
 
-  // Preload frames (completely skipped on mobile/tablet to save 100% bandwidth since canvas is hidden)
+  // Progressive loading: first 8 frames load immediately, rest load in idle batches
+  // Mobile/tablet: completely skipped (canvas is hidden on small screens)
   useEffect(() => {
     const isMobile = window.innerWidth <= 1024;
     if (isMobile) {
       return; // Do not load any third sequence frames on mobile/tablet
     }
-    const images = [];
-    for (let i = 0; i < COMBINED_TOTAL_FRAMES; i++) {
-      const img = new Image();
-      img.src = getFrameUrl(i);
-      images.push(img);
-    }
+
+    const images = new Array(COMBINED_TOTAL_FRAMES).fill(null).map(() => new Image());
     imagesRef.current = images;
+
+    // PHASE 1: Load first 8 frames immediately for instant canvas paint
+    const INITIAL_BATCH = 8;
+    for (let i = 0; i < Math.min(INITIAL_BATCH, COMBINED_TOTAL_FRAMES); i++) {
+      images[i].src = getFrameUrl(i);
+    }
+
+    // PHASE 2: Load remaining frames in small idle batches
+    let nextBatchStart = INITIAL_BATCH;
+    const BATCH_SIZE = 20;
+
+    const loadNextBatch = () => {
+      if (nextBatchStart >= COMBINED_TOTAL_FRAMES) return;
+      const end = Math.min(nextBatchStart + BATCH_SIZE, COMBINED_TOTAL_FRAMES);
+      for (let i = nextBatchStart; i < end; i++) {
+        images[i].src = getFrameUrl(i);
+      }
+      nextBatchStart = end;
+      if (nextBatchStart < COMBINED_TOTAL_FRAMES) {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(loadNextBatch, { timeout: 400 });
+        } else {
+          setTimeout(loadNextBatch, 150);
+        }
+      }
+    };
+
+    // Delay start so hero section loads first
+    const timer = setTimeout(() => {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadNextBatch, { timeout: 600 });
+      } else {
+        setTimeout(loadNextBatch, 300);
+      }
+    }, 1500);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const drawFrame = (frameIndex) => {
