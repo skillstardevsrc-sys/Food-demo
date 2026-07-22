@@ -360,7 +360,7 @@ export default function ThirdSection({ onOpenOrderModal }) {
                 style={{ animationDelay: `${i * 0.04}s` }}
               >
                 <div class="kdish-img-wrap">
-                  <img src={currentKitchen.image} alt={dish.name} class="kdish-img" />
+                  <img src={currentKitchen.image} alt={dish.name} class="kdish-img" loading="lazy" decoding="async" />
                   <div class="kdish-img-overlay" style={{ background: `linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%)` }}></div>
                 </div>
                 <div class="kdish-badge" style={{ background: dish.badgeColor }}>{dish.badge}</div>

@@ -98,16 +98,27 @@ export default function HeroSection({ onOpenOrderModal, onScrollToMenu }) {
 
       let drawW, drawH, drawX, drawY;
 
-      if (canvasRatio > imgRatio) {
+      const isMobile = window.innerWidth <= 1024;
+
+      if (isMobile) {
+        // Fit to width on mobile/tablet viewports so the burger doesn't get cut off on the sides (contain)
         drawW = w;
         drawH = w / imgRatio;
         drawX = 0;
         drawY = (h - drawH) / 2;
       } else {
-        drawH = h;
-        drawW = h * imgRatio;
-        drawX = (w - drawW) / 2;
-        drawY = 0;
+        // Cover strategy on desktop
+        if (canvasRatio > imgRatio) {
+          drawW = w;
+          drawH = w / imgRatio;
+          drawX = 0;
+          drawY = (h - drawH) / 2;
+        } else {
+          drawH = h;
+          drawW = h * imgRatio;
+          drawX = (w - drawW) / 2;
+          drawY = 0;
+        }
       }
 
       ctx.imageSmoothingEnabled = true;
